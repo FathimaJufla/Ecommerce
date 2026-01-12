@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details - Stock-Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="w-full bg-white shadow-md sticky top-0 z-50">
+        <div class="flex justify-between items-center py-2 max-w-screen-xl mx-auto px-4">
+            <div class="flex items-center gap-2">
+                <a href="/">
+                    <img src="https://img.freepik.com/free-vector/seasonal-sale-discounts-presents-purchase-visiting-boutiques-luxury-shopping-price-reduction-promotional-coupons-special-holiday-offers-vector-isolated-concept-metaphor-illustration_335657-2766.jpg?semt=ais_hybrid&w=740&q=80"
+                         alt="logo" class="w-[80px] h-auto">
+                </a>
+                <a href="/">
+                    <h1 class="text-4xl font-extrabold italic text-purple-600">Stock Up</h1>
+                </a>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="/your-orders/" class="px-4 py-2 text-purple-600 hover:text-purple-700 font-semibold">
+                    <i class="fa-solid fa-box"></i> Your Orders
+                </a>
+                <a href="/user_logout/" class="px-4 py-2 text-gray-700 hover:text-gray-900 font-semibold">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-screen-xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h2>
+                    <p class="text-gray-600">Order Number: <span class="font-semibold text-purple-600">{{ order.order_number }}</span></p>
+                </div>
+                <a href="/download-invoice/{{ order.id }}/" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition duration-300 font-semibold">
+                    <i class="fa-solid fa-download"></i> Download Invoice
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <h3 class="font-bold text-gray-800 mb-2">Order Details</h3>
+                    <p class="text-sm text-gray-600"><span class="font-semibold">Date:</span> {{ order.order_date|date:"F d, Y H:i" }}</p>
+                    <p class="text-sm text-gray-600"><span class="font-semibold">Status:</span> 
+                        <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded">{{ order.get_status_display }}</span>
+                    </p>
+                    <p class="text-sm text-gray-600"><span class="font-semibold">Payment:</span> {{ order.get_payment_method_display }}</p>
+                </div>
+                
+                <div class="bg-purple-50 rounded-lg p-4">
+                    <h3 class="font-bold text-gray-800 mb-2">Shipping Address</h3>
+                    <p class="text-sm text-gray-600 whitespace-pre-line">{{ order.shipping_address }}</p>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Ordered Items</h3>
+                <div class="space-y-4">
+                    {% for item in order.items.all %}
+                        <div class="flex items-center gap-4 pb-4 border-b">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-24 h-24 object-cover rounded">
+                            {% else %}
+                                <div class="w-24 h-24 bg-purple-100 rounded flex items-center justify-center">
+                                    <i class="fa-solid fa-image text-3xl text-purple-300"></i>
+                                </div>
+                            {% endif %}
+                            <div class="flex-1">
+                                <h4 class="text-lg font-bold text-gray-800">{{ item.product.name }}</h4>
+                                <p class="text-gray-600 text-sm">Quantity: {{ item.quantity }}</p>
+                                <p class="text-purple-600 font-bold">${{ item.price }} each</p>
+                            </div>
+                            <p class="text-xl font-bold text-gray-800">${{ item.get_total }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-6 flex justify-end">
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-purple-600">Total: ${{ order.total_amount }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-4">
+                <a href="/" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition duration-300 font-semibold">
+                    Continue Shopping
+                </a>
+                <a href="/your-orders/" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition duration-300 font-semibold">
+                    View All Orders
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+

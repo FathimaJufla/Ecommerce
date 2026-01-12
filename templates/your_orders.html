@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders - Stock-Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="w-full bg-white shadow-md sticky top-0 z-50">
+        <div class="flex justify-between items-center py-2 max-w-screen-xl mx-auto px-4">
+            <div class="flex items-center gap-2">
+                <a href="/">
+                    <img src="https://img.freepik.com/free-vector/seasonal-sale-discounts-presents-purchase-visiting-boutiques-luxury-shopping-price-reduction-promotional-coupons-special-holiday-offers-vector-isolated-concept-metaphor-illustration_335657-2766.jpg?semt=ais_hybrid&w=740&q=80"
+                         alt="logo" class="w-[80px] h-auto">
+                </a>
+                <a href="/">
+                    <h1 class="text-4xl font-extrabold italic text-purple-600">Stock Up</h1>
+                </a>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="/cart/" class="relative flex items-center gap-2 font-semibold text-purple-600 hover:text-purple-700">
+                    <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                    Cart
+                </a>
+                <a href="/user_logout/" class="px-4 py-2 text-gray-700 hover:text-gray-900 font-semibold">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-screen-xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Your Orders</h2>
+        
+        {% if orders %}
+            <div class="space-y-6">
+                {% for order in orders %}
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Order Placed</p>
+                                <p class="font-semibold text-gray-800">{{ order.order_date|date:"F d, Y" }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600">Total</p>
+                                <p class="text-xl font-bold text-purple-600">${{ order.total_amount }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600">Order #{{ order.order_number }}</p>
+                            <p class="text-sm text-gray-600">Payment: {{ order.get_payment_method_display }}</p>
+                            <p class="text-sm">
+                                Status: 
+                                <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded">{{ order.get_status_display }}</span>
+                            </p>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                {% for item in order.items.all|slice:":2" %}
+                                    <div class="flex items-center gap-3">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded">
+                                        {% else %}
+                                            <div class="w-16 h-16 bg-purple-100 rounded flex items-center justify-center">
+                                                <i class="fa-solid fa-image text-xl text-purple-300"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <p class="font-semibold text-gray-800">{{ item.product.name }}</p>
+                                            <p class="text-sm text-gray-600">Qty: {{ item.quantity }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if order.items.count > 2 %}
+                                <p class="text-sm text-gray-600 mb-4">+ {{ order.items.count|add:"-2" }} more item(s)</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="flex gap-3 mt-4">
+                            <a href="/order-details/{{ order.id }}/" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition duration-300 font-semibold text-sm">
+                                View Details
+                            </a>
+                            <a href="/download-invoice/{{ order.id }}/" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition duration-300 font-semibold text-sm">
+                                <i class="fa-solid fa-download"></i> Invoice
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-20 bg-white rounded-lg shadow-md">
+                <img src="https://cdn-icons-png.flaticon.com/512/4076/4076503.png" class="mx-auto w-40 opacity-70 mb-4">
+                <h2 class="text-2xl font-semibold text-gray-700 mb-2">
+                    You haven't placed any orders yet
+                </h2>
+                <p class="text-gray-500 mb-6">Start shopping to see your orders here</p>
+                <a href="/" class="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition duration-300 font-semibold">
+                    Start Shopping
+                </a>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>

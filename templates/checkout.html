@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Stock-Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="w-full bg-white shadow-md sticky top-0 z-50">
+        <div class="flex justify-between items-center py-2 max-w-screen-xl mx-auto px-4">
+            <div class="flex items-center gap-2">
+                <a href="/">
+                    <img src="https://img.freepik.com/free-vector/seasonal-sale-discounts-presents-purchase-visiting-boutiques-luxury-shopping-price-reduction-promotional-coupons-special-holiday-offers-vector-isolated-concept-metaphor-illustration_335657-2766.jpg?semt=ais_hybrid&w=740&q=80"
+                         alt="logo" class="w-[80px] h-auto">
+                </a>
+                <a href="/">
+                    <h1 class="text-4xl font-extrabold italic text-purple-600">Stock Up</h1>
+                </a>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="/your-orders/" class="px-4 py-2 text-purple-600 hover:text-purple-700 font-semibold">
+                    <i class="fa-solid fa-box"></i> Your Orders
+                </a>
+                <a href="/user_logout/" class="px-4 py-2 text-gray-700 hover:text-gray-900 font-semibold">
+                    <i class="fa-solid fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-screen-xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Checkout</h2>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Price Details</h3>
+                    {% if single_item %}
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-4 pb-4 border-b">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-20 h-20 object-cover rounded">
+                                {% else %}
+                                    <div class="w-20 h-20 bg-purple-100 rounded flex items-center justify-center">
+                                        <i class="fa-solid fa-image text-2xl text-purple-300"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-800">{{ product.name }}</h4>
+                                    <p class="text-sm text-gray-600">Quantity: {{ quantity }}</p>
+                                    <p class="text-purple-600 font-bold">${{ product.price }}</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between pt-2">
+                                <span class="text-lg font-bold">Total:</span>
+                                <span class="text-xl font-bold text-purple-600">${{ total }}</span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="space-y-3">
+                            {% for item in cart_items %}
+                                <div class="flex items-center gap-4 pb-4 border-b">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-20 h-20 object-cover rounded">
+                                    {% else %}
+                                        <div class="w-20 h-20 bg-purple-100 rounded flex items-center justify-center">
+                                            <i class="fa-solid fa-image text-2xl text-purple-300"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">{{ item.product.name }}</h4>
+                                        <p class="text-sm text-gray-600">Quantity: {{ item.quantity }}</p>
+                                        <p class="text-purple-600 font-bold">${{ item.product.price }}</p>
+                                    </div>
+                                    <p class="text-lg font-bold">${{ item.get_total }}</p>
+                                </div>
+                            {% endfor %}
+                            <div class="flex justify-between pt-2">
+                                <span class="text-lg font-bold">Total:</span>
+                                <span class="text-xl font-bold text-purple-600">${{ total }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Continue</h3>
+                    <form method="POST" action="/place-order/">
+                        {% csrf_token %}
+                        {% if single_item %}
+                            <input type="hidden" name="single_product_id" value="{{ product.id }}">
+                            <input type="hidden" name="quantity" value="{{ quantity }}">
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <label for="shipping_address" class="block text-gray-700 font-semibold mb-2">Shipping Address</label>
+                            <textarea name="shipping_address" id="shipping_address" rows="4" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                                placeholder="Enter your complete shipping address" required></textarea>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="payment_method" class="block text-gray-700 font-semibold mb-2">Payment Method</label>
+                            <select name="payment_method" id="payment_method" 
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Card">Credit/Debit Card</option>
+                                <option value="COD">Cash on Delivery</option>
+                                <option value="Net Banking">Net Banking</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition duration-300 font-semibold">
+                            <i class="fa-solid fa-check"></i> Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Order Summary</h3>
+                    <div class="space-y-3 mb-4">
+                        {% if single_item %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">{{ product.name }}</span>
+                                <span class="font-semibold">${{ product.price }} x {{ quantity }}</span>
+                            </div>
+                        {% else %}
+                            {% for item in cart_items %}
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">{{ item.product.name }} (x{{ item.quantity }})</span>
+                                    <span class="font-semibold">${{ item.get_total }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="border-t pt-3 flex justify-between">
+                            <span class="text-lg font-bold text-gray-800">Total:</span>
+                            <span class="text-xl font-bold text-purple-600">${{ total }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+

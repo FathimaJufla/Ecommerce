@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock-Up</title>
+    <link rel="icon" href="https://img.freepik.com/free-vector/seasonal-sale-discounts-presents-purchase-visiting-boutiques-luxury-shopping-price-reduction-promotional-coupons-special-holiday-offers-vector-isolated-concept-metaphor-illustration_335657-2766.jpg?semt=ais_hybrid&w=740&q=80">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="w-full bg-white shadow-md sticky top-0 z-50">
+        <div class="flex justify-between items-center py-2 max-w-screen-xl mx-auto px-4">
+            <div class="flex items-center gap-2">
+                <img src="https://img.freepik.com/free-vector/seasonal-sale-discounts-presents-purchase-visiting-boutiques-luxury-shopping-price-reduction-promotional-coupons-special-holiday-offers-vector-isolated-concept-metaphor-illustration_335657-2766.jpg?semt=ais_hybrid&w=740&q=80"
+                     alt="logo" class="w-[80px] h-auto">
+                <h1 class="text-4xl font-extrabold italic text-purple-600">Stock Up</h1>
+            </div>
+
+            <div class="flex items-center gap-6">
+                {% if user %}
+                    <a href="/your-orders/" class="px-4 py-2 text-purple-600 hover:text-purple-700 font-semibold">
+                        <i class="fa-solid fa-box"></i> Your Orders
+                    </a>
+                    <a href="/user_logout/" class="px-4 py-2 text-gray-700 hover:text-gray-900 font-semibold">
+                        <i class="fa-solid fa-sign-out-alt"></i> Logout
+                    </a>
+                {% else %}
+                    <div class="relative group">
+                        <a href="/user_login/" class="px-4 py-2 text-black hover:text-white rounded-lg border hover:bg-purple-600 font-semibold">Login</a>
+                        <div class="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg opacity-0 invisible 
+                            group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                            <p class="block px-4 py-2 hover:bg-purple-50 text-gray-700">New Customer? <a href="/user_register/" class="text-purple-700 underline">Sign Up</a></p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <a href="/cart/" class="relative flex items-center gap-1 font-semibold hover:text-purple-700">
+                    <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                    {% if cart_count > 0 %}
+                        <span class="absolute -top-2 -right-2 bg-purple-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">{{ cart_count }}</span>
+                    {% endif %}
+                    Cart
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-screen-xl mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Our Products</h2>
+        
+        {% if products %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {% for product in products %}
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        {% if product.image %}
+                            <div class="w-full h-64 overflow-hidden bg-gray-100">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="w-full h-64 bg-purple-100 flex items-center justify-center" style="display:none;">
+                                    <i class="fa-solid fa-image text-6xl text-purple-300"></i>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="w-full h-64 bg-purple-100 flex items-center justify-center">
+                                <i class="fa-solid fa-image text-6xl text-purple-300"></i>
+                            </div>
+                        {% endif %}
+                        <div class="p-4">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ product.name }}</h3>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ product.description|default:"No description available" }}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl font-bold text-black">${{ product.price }}</span>
+                                {% if user %}
+                                    <a href="/add-to-cart/{{ product.id }}/" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">
+                                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                    </a>
+                                {% else %}
+                                    <a href="/user_login/" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-300">
+                                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-20">
+                <i class="fa-solid fa-box-open text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-semibold text-gray-600 mb-2">No Products Available</h3>
+                <p class="text-gray-500">Check back later for new products!</p>
+            </div>
+        {% endif %}
+    </main>
+</body>
+</html>
